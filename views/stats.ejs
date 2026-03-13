@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistika: <%= proposal.title %> | LedPro</title>
+  <link href="https://fonts.cdnfonts.com/css/samsung-sans-4" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Samsung Sans', sans-serif; background: #fafaf9; color: #1c1917; padding: 2rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .logo { height: 28px; margin-bottom: 2rem; opacity: 0.9; }
+    h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .back { color: #0f766e; text-decoration: none; font-size: 0.9rem; margin-bottom: 2rem; display: inline-block; }
+    .back:hover { text-decoration: underline; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .stat-card { background: #fff; border: 1px solid #e7e5e4; border-radius: 8px; padding: 1.25rem; }
+    .stat-value { font-size: 1.75rem; font-weight: 500; }
+    .stat-label { font-size: 0.8rem; color: #78716c; margin-top: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #e7e5e4; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e7e5e4; }
+    th { background: #f5f5f4; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #78716c; }
+    tr:last-child td { border-bottom: none; }
+    .event-view { color: #0f766e; }
+    .event-download { color: #b45309; }
+    .empty { color: #78716c; padding: 2rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/ledpro-logo-black.png" alt="LedPro" class="logo">
+    <a href="/proposal/<%= proposal.slug %>" class="back">← Atgal į pasiūlymą</a>
+    <h1><%= proposal.title %></h1>
+    <p style="color:#78716c;font-size:0.9rem;">Peržiūrų statistika</p>
+
+    <div class="stats-grid">
+      <% const viewStat = stats.find(s => s.event_type === 'view'); %>
+      <% const downloadStat = stats.find(s => s.event_type === 'download_pdf'); %>
+      <div class="stat-card">
+        <div class="stat-value"><%= viewStat ? viewStat.count : 0 %></div>
+        <div class="stat-label">Peržiūros</div>
+        <% if (viewStat) { %><div class="stat-label"><%= viewStat.unique_ips %> unikalūs IP</div><% } %>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value"><%= downloadStat ? downloadStat.count : 0 %></div>
+        <div class="stat-label">PDF atsisiuntimai</div>
+        <% if (downloadStat) { %><div class="stat-label"><%= downloadStat.unique_ips %> unikalūs IP</div><% } %>
+      </div>
+    </div>
+
+    <h2 style="font-size:1rem;margin:2rem 0 1rem;">Paskutiniai įvykiai</h2>
+    <% if (events.length > 0) { %>
+      <table>
+        <thead>
+          <tr><th>Laikas</th><th>IP</th><th>Įvykis</th><th>User Agent</th></tr>
+        </thead>
+        <tbody>
+          <% events.forEach(function(e) { %>
+            <tr>
+              <td><%= new Date(e.timestamp).toLocaleString('lt-LT') %></td>
+              <td><%= e.ip_address %></td>
+              <td><span class="event-<%= e.event_type === 'view' ? 'view' : 'download' %>"><%= e.event_type === 'view' ? 'Peržiūra' : 'PDF atsisiuntimas' %></span></td>
+              <td style="font-size:0.8rem;color:#78716c;max-width:200px;overflow:hidden;text-overflow:ellipsis;"><%= e.user_agent %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">Įvykių dar nėra</div>
+    <% } %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LedPro – Pasiūlymai</title>
+  <link href="https://fonts.cdnfonts.com/css/samsung-sans-4" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Samsung Sans', sans-serif;
+      background: #fafaf9;
+      color: #1c1917;
+      min-height: 100vh;
+      padding: 4rem 1.5rem;
+    }
+    .container { max-width: 640px; margin: 0 auto; }
+    .logo { height: 32px; margin-bottom: 3rem; opacity: 0.9; }
+    h1 { font-family: 'Samsung Sans', sans-serif; font-size: 1.75rem; font-weight: 600; margin-bottom: 2rem; }
+    .list { display: flex; flex-direction: column; gap: 0.5rem; }
+    a {
+      display: block;
+      padding: 1rem 1.25rem;
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 6px;
+      color: #1c1917;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+    a:hover { border-color: #0f766e; }
+    .proposal-title { font-weight: 500; margin-bottom: 0.25rem; }
+    .proposal-meta { font-size: 0.875rem; color: #78716c; }
+    .empty { color: #78716c; padding: 2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/ledpro-logo-black.png" alt="LedPro" class="logo">
+    <h1>Pasiūlymai</h1>
+    <% if (proposals.length > 0) { %>
+      <div class="list">
+        <% proposals.forEach(function(p) { %>
+          <a href="/proposal/<%= p.slug %>">
+            <span class="proposal-title"><%= p.title %></span>
+            <span class="proposal-meta"><%= p.location %> · <%= p.value %></span>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty">Pasiūlymų nėra. Paleiskite <code>npm run seed</code>.</p>
+    <% } %>
+  </div>
+</body>
+</html>

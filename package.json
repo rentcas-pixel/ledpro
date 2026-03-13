@@ -1,0 +1,16 @@
+{
+  "name": "ledpro-proposals",
+  "version": "1.0.0",
+  "description": "Proposal viewing system with statistics",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.6.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1"
+  }
+}

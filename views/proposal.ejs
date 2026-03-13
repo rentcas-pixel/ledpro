@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= proposal.title %> | LedPro</title>
+  <link href="https://fonts.cdnfonts.com/css/samsung-sans-4" rel="stylesheet">
+  <style>
+    :root {
+      --strip: #1e3a5f;
+      --text: #1c1917;
+      --text-muted: #6b7280;
+      --border: #1c1917;
+      --white: #ffffff;
+      --price-bg: #1e3a5f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Samsung Sans', -apple-system, sans-serif;
+      background: var(--white);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Vertical LEDPRO strip */
+    .brand-strip {
+      width: 120px;
+      min-width: 120px;
+      height: 100vh;
+      min-height: 100vh;
+      align-self: flex-start;
+      background: #1c1917;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 0;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+    }
+
+    .brand-strip-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      flex: 1;
+      gap: 2rem;
+    }
+
+    .brand-strip-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 252px;
+      height: auto;
+      filter: invert(1) brightness(2);
+      object-fit: contain;
+      transform: translate(-50%, -50%) rotate(-90deg);
+    }
+
+    .brand-strip-dots {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .brand-strip-dots span {
+      width: 6px;
+      height: 6px;
+      background: var(--white);
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+
+    .brand-strip-dots span:nth-child(2) { margin-top: 20px; }
+    .brand-strip-dots span:nth-child(3) { margin-top: 10px; }
+    .brand-strip-dots span:nth-child(4) { margin-top: 8px; }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-y: auto;
+    }
+
+    .main-top {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    @media (min-width: 900px) {
+      .main-top { flex-direction: row; }
+    }
+
+    .content-left {
+      padding: 3rem 2.5rem;
+      margin-left: 20px;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    @media (min-width: 900px) {
+      .content-left {
+        flex: 1;
+        align-items: center;
+      }
+      .content-left .thumbnails-wrap {
+        align-self: stretch;
+        max-width: 100%;
+      }
+    }
+
+    .content-right {
+      padding: 3rem 70px;
+      width: 100%;
+      flex: 1;
+      min-width: 0;
+    }
+
+    @media (min-width: 900px) {
+      .content-right {
+        flex: 1;
+        border-left: 1px solid #e5e7eb;
+      }
+    }
+
+    .section-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: lowercase;
+    }
+
+    .proposal-number {
+      font-size: 14px;
+      font-style: italic;
+      color: var(--strip);
+      margin-bottom: 0.5rem;
+      margin-left: 20px;
+      align-self: flex-start;
+      width: 100%;
+    }
+
+    .model-number {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+    }
+
+    .model-desc {
+      font-size: 28px;
+      color: var(--text);
+      margin-top: -10px;
+      margin-bottom: 2rem;
+    }
+
+    .visual {
+      margin-top: 1.5rem;
+      background: transparent;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .visual-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .thumbnails-wrap {
+      margin-top: 1rem;
+      width: 100%;
+      align-self: stretch;
+      overflow: visible;
+    }
+
+    .thumbnails {
+      display: grid;
+      grid-template-columns: repeat(3, 72px);
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .thumb {
+      width: 72px;
+      height: 72px;
+      min-width: 72px;
+      min-height: 72px;
+      padding: 0;
+      border: 2px solid #d1d5db;
+      background: #f3f4f6;
+      cursor: pointer;
+      overflow: hidden;
+      border-radius: 4px;
+      transition: border-color 0.2s;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
+    .thumb:hover,
+    .thumb.active {
+      border-color: var(--strip);
+    }
+
+    .thumb .thumb-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      vertical-align: top;
+    }
+
+    /* Spec tables */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+
+    .spec-table th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .spec-table td {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #d1d5db;
+      font-size: 16px;
+    }
+
+    .spec-table tr:last-child td {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .spec-table .param-name {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .param-expandable {
+      cursor: pointer;
+      position: relative;
+      padding-right: 1.5rem;
+    }
+
+    .param-expandable::after {
+      content: '+';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+
+    .param-expandable.expanded::after {
+      content: '−';
+    }
+
+    .param-expand-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .param-expand-content.expanded {
+      max-height: 300px;
+    }
+
+    .param-expand-content-inner {
+      padding: 1rem 0 0 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .spec-table .param-value {
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .spec-table .price-row td {
+      border-bottom: none;
+    }
+
+    .spec-table .price-value {
+      background: var(--strip);
+      color: var(--white);
+      padding: 0 1.25rem;
+      height: 44px;
+      line-height: 44px;
+      font-weight: 500;
+      font-size: 16px;
+      border-radius: 0;
+      display: block;
+      width: 180px;
+      text-align: center;
+      box-sizing: border-box;
+      margin-left: auto;
+    }
+
+    .spec-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .spec-section-title:first-child {
+      margin-top: 0;
+    }
+
+    .certifications {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Download CTA */
+    .cta {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0 1.25rem;
+      height: 44px;
+      width: 180px;
+      box-sizing: border-box;
+      border-radius: 0;
+      background: #1c1917;
+      color: var(--white);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .btn-download:hover {
+      opacity: 0.9;
+    }
+
+    .btn-download svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Mobile: strip on top */
+    @media (max-width: 600px) {
+      .brand-strip {
+        width: 100%;
+        min-width: 100%;
+        flex-direction: row;
+        padding: 1rem 1.5rem;
+        justify-content: center;
+      }
+
+      .brand-strip-inner {
+        flex-direction: row;
+        gap: 1rem;
+      }
+
+      .brand-strip-dots {
+        flex-direction: row;
+      }
+
+      .brand-strip-logo {
+        position: static;
+        top: auto;
+        left: auto;
+        width: 84px;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="brand-strip">
+    <div class="brand-strip-inner">
+      <img src="/ledpro-logo-black.png" alt="LedPro" class="brand-strip-logo">
+      <div class="brand-strip-dots">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-top">
+    <div class="content-left">
+      <div class="proposal-number">Nr. led20260313</div>
+      <h1 class="model-number"><%= proposal.title %></h1>
+      <p class="model-desc"><%= proposal.description || proposal.location %></p>
+
+      <% 
+        const thumbs = (typeof thumbnails !== 'undefined' && Array.isArray(thumbnails)) ? thumbnails : [];
+        const thumbsToShow = thumbs.length > 0 ? thumbs : (proposal.image_url ? [proposal.image_url] : []);
+      %>
+      <div class="visual">
+        <% const mainImg = proposal.image_url || (thumbsToShow.length > 0 ? thumbsToShow[0] : null); %>
+        <% if (mainImg) { %>
+          <img src="<%= mainImg %>" alt="<%= proposal.title %>" id="main-visual">
+        <% } else { %>
+          <div class="visual-placeholder">Projekto vizualizacija</div>
+        <% } %>
+      </div>
+      <% if (thumbsToShow.length > 0) { %>
+        <div class="thumbnails-wrap">
+          <div class="thumbnails">
+            <button type="button" class="thumb active" data-src="<%= thumbsToShow[0] %>"><span class="thumb-img"><img src="<%= thumbsToShow[0] %>" alt="1"></span></button>
+            <% if (thumbsToShow[1]) { %><button type="button" class="thumb" data-src="<%= thumbsToShow[1] %>"><span class="thumb-img"><img src="<%= thumbsToShow[1] %>" alt="2"></span></button><% } %>
+            <% if (thumbsToShow[2]) { %><button type="button" class="thumb" data-src="<%= thumbsToShow[2] %>"><span class="thumb-img"><img src="<%= thumbsToShow[2] %>" alt="3"></span></button><% } %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="content-right">
+      <% const groups = typeof paramGroups !== 'undefined' ? paramGroups : []; %>
+      <% if (groups.length > 0) { %>
+        <% groups.forEach(function(group) { %>
+          <div class="spec-section-title"><%= group.name %></div>
+          <table class="spec-table">
+            <% group.items.forEach(function(item) { %>
+              <tr>
+                <td class="param-name">
+                  <% if (item.label === 'Apsaugos klasė (priekis/galas)') { %>
+                    <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= item.label %></span>
+                    <div class="param-expand-content">
+                      <div class="param-expand-content-inner">Pilna apsauga nuo dulkių ir atsparumas stiprioms vandens srovėms, tinkama eksploatuoti lauko sąlygomis.</div>
+                    </div>
+                  <% } else if (item.label === 'Pilkumo skalė (Bitai)') { %>
+                    <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= item.label %></span>
+                    <div class="param-expand-content">
+                      <div class="param-expand-content-inner">16 bitų pilkumo skalė leidžia tiksliai atvaizduoti spalvų ir ryškumo perėjimus, todėl vaizdas LED ekrane atrodo sklandus, detalus ir natūralus, be matomų „laiptelių" tamsesnėse ar šviesesnėse vietose.</div>
+                    </div>
+                  <% } else if (item.label === 'Atnaujinimo dažnis (Hz)') { %>
+                    <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= item.label %></span>
+                    <div class="param-expand-content">
+                      <div class="param-expand-content-inner">Didelis atnaujinimo dažnis užtikrina itin stabilų ir tolygų vaizdą be mirgėjimo. Tai ypač svarbu filmuojant ar fotografuojant ekraną bei užtikrina aukštą vaizdo kokybę net greitai kintančiame turinyje.</div>
+                    </div>
+                  <% } else if (item.label === 'Atsarginių dalių komplektas') { %>
+                    <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= item.label %></span>
+                    <div class="param-expand-content">
+                      <div class="param-expand-content-inner">Kartu su LED ekranu pateikiamas atsarginių komponentų komplektas (moduliai, maitinimo blokai ir kt.), skirtas greitam galimų gedimų šalinimui ir nepertraukiamam ekrano veikimui užtikrinti.</div>
+                    </div>
+                  <% } else if (item.label === 'Technologija') { %>
+                    <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= item.label %></span>
+                    <div class="param-expand-content">
+                      <div class="param-expand-content-inner">SMD (Surface-Mounted Device) technologija užtikrina ryškų, vienodą ir platų matymo kampą turintį vaizdą. Ši technologija pasižymi aukšta vaizdo kokybe, patikimumu ir yra plačiai naudojama moderniuose lauko LED ekranuose.</div>
+                    </div>
+                  <% } else if (item.label === 'Minimalus žiūrėjimo atstumas (m)') { %>
+                    <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= item.label %></span>
+                    <div class="param-expand-content">
+                      <div class="param-expand-content-inner">Mažiausias atstumas, iš kurio LED ekrano vaizdas matomas aiškiai ir komfortiškai, be matomos pikselių struktūros.</div>
+                    </div>
+                  <% } else { %>
+                    <%= item.label %>
+                  <% } %>
+                </td>
+                <td class="param-value"><%= item.value %></td>
+              </tr>
+            <% }); %>
+          </table>
+        <% }); %>
+      <% } else if (typeof parameters !== 'undefined' && parameters.length > 0) { %>
+        <div class="spec-section-title">Parametrai</div>
+        <table class="spec-table">
+          <% parameters.forEach(function(p) { %>
+            <tr>
+              <td class="param-name">
+                <% if (p.label === 'Apsaugos klasė (priekis/galas)') { %>
+                  <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= p.label %></span>
+                  <div class="param-expand-content">
+                    <div class="param-expand-content-inner">Pilna apsauga nuo dulkių ir atsparumas stiprioms vandens srovėms, tinkama eksploatuoti lauko sąlygomis.</div>
+                  </div>
+                <% } else if (p.label === 'Pilkumo skalė (Bitai)') { %>
+                  <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= p.label %></span>
+                  <div class="param-expand-content">
+                    <div class="param-expand-content-inner">16 bitų pilkumo skalė leidžia tiksliai atvaizduoti spalvų ir ryškumo perėjimus, todėl vaizdas LED ekrane atrodo sklandus, detalus ir natūralus, be matomų „laiptelių" tamsesnėse ar šviesesnėse vietose.</div>
+                  </div>
+                <% } else if (p.label === 'Atnaujinimo dažnis (Hz)') { %>
+                  <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= p.label %></span>
+                  <div class="param-expand-content">
+                    <div class="param-expand-content-inner">Didelis atnaujinimo dažnis užtikrina itin stabilų ir tolygų vaizdą be mirgėjimo. Tai ypač svarbu filmuojant ar fotografuojant ekraną bei užtikrina aukštą vaizdo kokybę net greitai kintančiame turinyje.</div>
+                  </div>
+                <% } else if (p.label === 'Atsarginių dalių komplektas') { %>
+                  <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= p.label %></span>
+                  <div class="param-expand-content">
+                    <div class="param-expand-content-inner">Kartu su LED ekranu pateikiamas atsarginių komponentų komplektas (moduliai, maitinimo blokai ir kt.), skirtas greitam galimų gedimų šalinimui ir nepertraukiamam ekrano veikimui užtikrinti.</div>
+                  </div>
+                <% } else if (p.label === 'Technologija') { %>
+                  <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= p.label %></span>
+                  <div class="param-expand-content">
+                    <div class="param-expand-content-inner">SMD (Surface-Mounted Device) technologija užtikrina ryškų, vienodą ir platų matymo kampą turintį vaizdą. Ši technologija pasižymi aukšta vaizdo kokybe, patikimumu ir yra plačiai naudojama moderniuose lauko LED ekranuose.</div>
+                  </div>
+                <% } else if (p.label === 'Minimalus žiūrėjimo atstumas (m)') { %>
+                  <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')"><%= p.label %></span>
+                  <div class="param-expand-content">
+                    <div class="param-expand-content-inner">Mažiausias atstumas, iš kurio LED ekrano vaizdas matomas aiškiai ir komfortiškai, be matomos pikselių struktūros.</div>
+                  </div>
+                <% } else { %>
+                  <%= p.label %>
+                <% } %>
+              </td>
+              <td class="param-value"><%= p.value %></td>
+            </tr>
+          <% }); %>
+        </table>
+      <% } %>
+
+      <div class="spec-section-title">Kaina</div>
+      <table class="spec-table">
+        <tr>
+          <td class="param-name">Ekrano kaina 1 vnt. be PVM</td>
+          <td class="param-value price-value"><%= proposal.value %></td>
+        </tr>
+        <% if (proposal.garantija) { %>
+          <tr class="price-row">
+            <td class="param-name">
+              <span class="param-expandable" onclick="this.classList.toggle('expanded'); this.nextElementSibling.classList.toggle('expanded')">Gamintojo garantija</span>
+              <div class="param-expand-content">
+                <div class="param-expand-content-inner">Garantija apima LED ekrano komponentų patikimumą ir užtikrina operatyvų gedimų šalinimą. Garantiniu laikotarpiu atliekama diagnostika, defektinių modulių ar kitų komponentų keitimas bei techninė pagalba. Mūsų specialistai taip pat teikia nuotolinę konsultaciją ir, esant poreikiui, atvyksta į objektą problemos sprendimui, užtikrindami stabilų ir nepertraukiamą ekrano veikimą.</div>
+              </div>
+            </td>
+            <td class="param-value"><%= proposal.garantija %></td>
+          </tr>
+        <% } %>
+      </table>
+
+      <% if (proposal.certifications) { %>
+        <div class="certifications"><%= proposal.certifications %></div>
+      <% } else { %>
+        <div class="certifications">Sert. UL CE, ETL, ROHS</div>
+      <% } %>
+
+      <div class="cta">
+        <a href="/proposal/<%= proposal.slug %>/download" class="btn-download">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Atsisiųsti PDF
+        </a>
+      </div>
+    </div>
+    </div>
+
+    </main>
+  <script>
+    document.querySelectorAll('.thumb').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var main = document.getElementById('main-visual');
+        if (main) {
+          main.src = this.dataset.src;
+          document.querySelectorAll('.thumb').forEach(function(t) { t.classList.remove('active'); });
+          this.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
