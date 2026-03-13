@@ -1,7 +1,12 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
-const db = new Database(path.join(__dirname, 'data', 'ledpro.db'));
+const dbDir = path.join(__dirname, 'data');
+const dbPath = path.join(dbDir, 'ledpro.db');
+if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+
+const db = new Database(dbPath);
 
 // Initialize schema
 function initDb() {

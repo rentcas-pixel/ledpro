@@ -16,16 +16,17 @@ app.get('/', (req, res) => {
   res.render('index', { proposals });
 });
 
-// Track view event
+// Track view event (silent fail on read-only env e.g. Vercel)
 function trackEvent(proposalId, req, eventType) {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
-  const userAgent = req.headers['user-agent'] || 'unknown';
-
-  const stmt = db.prepare(`
-    INSERT INTO view_events (proposal_id, ip_address, user_agent, event_type)
-    VALUES (?, ?, ?, ?)
-  `);
-  stmt.run(proposalId, ip, userAgent, eventType);
+  try {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const stmt = db.prepare(`
+      INSERT INTO view_events (proposal_id, ip_address, user_agent, event_type)
+      VALUES (?, ?, ?, ?)
+    `);
+    stmt.run(proposalId, ip, userAgent, eventType);
+  } catch (_) {}
 }
 
 // Proposal page: /proposal/:slug or /process/:slug
@@ -159,7 +160,13 @@ app.get('/stats/:slug', (req, res) => {
   res.render('stats', { proposal, stats, events });
 });
 
-app.listen(PORT, () => {
-  console.log(`LedPro serveris: http://localhost:${PORT}`);
-  console.log(`A0625: http://localhost:${PORT}/proposal/a0625 arba http://localhost:${PORT}/process/a0625`);
-});
+// Export for Vercel serverless
+module.exports = app;
+
+// Local development: start server
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`LedPro serveris: http://localhost:${PORT}`);
+    console.log(`A0625: http://localhost:${PORT}/proposal/a0625 arba http://localhost:${PORT}/process/a0625`);
+  });
+}
