@@ -1,54 +1,29 @@
-# LedPro – Pasiūlymų peržiūros sistema
+# LedPro – Pasiūlymų peržiūra
 
-Web sistema komerciniams pasiūlymams rodyti su unikaliais URL ir peržiūrų statistika.
+Web sistema komercinių pasiūlymų peržiūrai su unikaliais URL ir statistikos registravimu.
 
-## Paleisti
+## Lokalus paleidimas
 
 ```bash
 npm install
-npm run seed    # Prideda pavyzdinius pasiūlymus
+npm run seed
 npm start
 ```
 
-Atidarykite: http://localhost:3000
+Atidarykite http://localhost:3000
 
-## Struktūra
+## Deploy į Railway
 
-| URL | Aprašymas |
-|-----|-----------|
-| `/` | Pasiūlymų sąrašas |
-| `/proposal/:slug` | Pasiūlymo puslapis (pvz. `/proposal/jysk-ukmerges-233`) |
-| `/proposal/:slug/download` | PDF atsisiuntimas (registruoja `download_pdf`) |
-| `/stats/:slug` | Peržiūrų statistika |
-| `/api/stats/:slug` | Statistikos JSON API |
+1. Sukurkite paskyrą [railway.app](https://railway.app)
+2. **New Project** → **Deploy from GitHub repo**
+3. Pasirinkite `rentcas-pixel/ledpro`
+4. Railway automatiškai aptiks Node.js ir paleis
+5. **Settings** → **Generate Domain** – gausite URL (pvz. `ledpro-production.up.railway.app`)
 
-## Statistikos registravimas
+## Maršrutai
 
-Kiekvieną kartą atidarius pasiūlymo puslapį arba spaudžiant „Atsisiųsti PDF“, įrašoma:
-
-- `proposal_id`
-- `timestamp`
-- `ip_address`
-- `user_agent`
-- `event_type` (`view` arba `download_pdf`)
-
-## Naujų pasiūlymų pridėjimas
-
-Į `scripts/seed.js` pridėkite objektą į `proposals` masyvą arba įterpkite į SQLite:
-
-```javascript
-{
-  slug: 'unikalus-slug',
-  title: 'Projekto pavadinimas',
-  location: 'Vieta',
-  description: 'Trumpas aprašymas',
-  parameters: JSON.stringify([{ label: 'Param', value: 'Vertė' }]),
-  value: '12 450 €',
-  image_url: '/kelias/paveiksliukui.jpg',
-  pdf_url: '/kelias/pasiulymas.pdf',
-}
-```
-
-## Duomenų bazė
-
-SQLite failas: `data/ledpro.db`
+- `/` – pagrindinis (pasiūlymų sąrašas)
+- `/proposal/:slug` – pasiūlymo puslapis
+- `/process/:slug` – tas pats
+- `/prekes/:slug` – tas pats
+- `/stats/:slug` – statistikos puslapis
